@@ -31,3 +31,13 @@ Route::post('/reportPost',[ReportController::class,'reportPost']);
 //profile
 // Route::view('/profile', 'profile');
 Route::get('/profile',[ReportController::class,'reportGet']);
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
