@@ -13,5 +13,12 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 require __DIR__.'/../vendor/autoload.php';
 
 // Bootstrap Laravel and handle the request...
-(require_once __DIR__.'/../bootstrap/app.php')
-    ->handleRequest(Request::capture());
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+// Handle the request and send the response
+$request = Request::capture();
+$response = $app->handle($request);
+$response->send();
+
+// Terminate the application
+$app->terminate($request, $response);
