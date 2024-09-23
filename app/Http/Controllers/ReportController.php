@@ -28,4 +28,10 @@ class ReportController extends Controller
         return redirect('/list');
 
     }
+
+    public function reportGet()
+    {
+        $reports = Report::get();
+        return view('profile',['reports'=>$reports]);
+    }
 }

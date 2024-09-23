@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{asset('css/report.css')}}">
 </head>
 <body>
+    @include('header')
     <div class="container">
         <h1>Daily Report</h1>
         <form action="/reportPost" method="POST">

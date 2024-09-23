@@ -70,9 +70,18 @@
             <img src="images/cat1.jpg" alt="Logo" class="logo-image">
         </div>
         <div class="nav-links">
+            @if (!session()->has('login'))
             <a href="#login">Login</a>
             <a href="#signup">Signup</a>
-            <a href="#profile">Profile</a>
+            
+            @endif
+            
+            @if (session()->has('login'))
+            <a href="/list">Home</a>
+            <a href="/report">Report</a>
+            <a href="#">To Do</a>
+            <a href="/profile">Profile</a>
+            @endif
         </div>
     </header>
 

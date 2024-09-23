@@ -27,3 +27,7 @@ Route::view('/list','lists');
 Route::view('/report','dailyreport');
 //report post
 Route::post('/reportPost',[ReportController::class,'reportPost']);
+
+//profile
+// Route::view('/profile', 'profile');
+Route::get('/profile',[ReportController::class,'reportGet']);
