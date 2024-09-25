@@ -1,7 +1,7 @@
 FROM richarvey/nginx-php-fpm:1.7.2
 
 # Install necessary packages
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     curl \
     libzip-dev \
     unzip \
