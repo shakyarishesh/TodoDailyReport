@@ -1,31 +1,33 @@
 FROM richarvey/nginx-php-fpm:1.7.2
 
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    curl \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-install zip
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Copy application files to the container
 COPY . /var/www/html
+
+# Change ownership of the application files
+RUN chown -R www-data:www-data /var/www/html
 
 # Set environment variables
 ENV WEBROOT /var/www/html/public
 ENV PHP_ERRORS_STDERR 1
 ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
-
-# Laravel environment configuration
 ENV APP_ENV production
 ENV APP_DEBUG false
 ENV LOG_CHANNEL stderr
-
-# Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# Remove SKIP_COMPOSER or set it to 0
-# This allows Composer to run during the build process
-ENV SKIP_COMPOSER 0
-
 # Install composer dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Set correct permissions for Laravel folders
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN composer install --no-dev --optimize-autoloader -vvv
 
 # Cache Laravel configuration, routes, and views
 RUN php artisan config:cache
