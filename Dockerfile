@@ -1,19 +1,17 @@
+# Use the Nginx + PHP-FPM image with PHP 7.3 or 7.4 (as required)
 FROM richarvey/nginx-php-fpm:1.7.2
-
-# Switch to a base image that uses PHP 8.2
-FROM php:8.2-fpm
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
-curl \
-libzip-dev \
-unzip \
-libpng-dev \
-libjpeg-dev \
-libwebp-dev \
-zlib1g-dev \
-&& docker-php-ext-install zip \
-&& docker-php-ext-install gd
+    curl \
+    libzip-dev \
+    unzip \
+    libpng-dev \
+    libjpeg-dev \
+    libwebp-dev \
+    zlib1g-dev \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install gd
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -51,6 +49,5 @@ RUN php artisan view:cache
 # Expose port 80 for Nginx
 EXPOSE 80
 
-# Start the service
-# CMD ["php-fpm"]
+# Start the Nginx + PHP-FPM service
 CMD ["/start.sh"]
