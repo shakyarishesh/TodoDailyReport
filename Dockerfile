@@ -1,15 +1,19 @@
 FROM richarvey/nginx-php-fpm:1.7.2
 
+# Switch to a base image that uses PHP 8.2
+FROM php:8.2-fpm
+
 # Install necessary packages
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     curl \
     libzip-dev \
     unzip \
     libpng-dev \
-    libjpeg-turbo-dev \
+    libjpeg-dev \
     libwebp-dev \
-    zlib-dev \
-    && docker-php-ext-install zip
+    zlib1g-dev \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install gd
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -17,8 +21,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Check Composer version
 RUN composer --version
 
+# Set working directory
+WORKDIR /var/www/html
+
 # Copy application files to the container
-COPY . /var/www/html
+COPY . .
 
 # Change ownership of the application files
 RUN chown -R www-data:www-data /var/www/html
@@ -42,4 +49,4 @@ RUN php artisan route:cache
 RUN php artisan view:cache
 
 # Start the service
-CMD ["/start.sh"]
+CMD ["php-fpm"]
