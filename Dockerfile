@@ -16,14 +16,14 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Check Composer version (optional, for debugging)
-RUN composer --version
-
 # Set working directory
 WORKDIR /var/www/html
 
 # Copy application files to the container
 COPY . .
+
+# Copy the Nginx configuration file from the local directory to the container
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Change ownership of the application files to www-data
 RUN chown -R www-data:www-data /var/www/html
@@ -48,9 +48,6 @@ RUN php artisan view:cache
 
 # Expose port 80 for Nginx
 EXPOSE 80
-
-# Copy Nginx configuration file to the container
-COPY ./nginx.conf /etc/nginx/nginx.conf
 
 # Command to start both Nginx and PHP-FPM
 CMD service nginx start && php-fpm
