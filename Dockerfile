@@ -1,11 +1,9 @@
-# Use the richarvey/nginx-php-fpm image
-FROM richarvey/nginx-php-fpm:1.7.2
+# Use PHP 8.2 FPM as the base image
+FROM php:8.2-fpm
 
-# Set the working directory
-WORKDIR /var/www/html
-
-# Install necessary packages and PHP extensions
+# Install necessary packages, including Nginx and PHP extensions
 RUN apt-get update && apt-get install -y \
+    nginx \
     curl \
     libzip-dev \
     unzip \
@@ -22,7 +20,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Check Composer version
 RUN composer --version
 
-# Copy application files to the container
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application files
 COPY . .
 
 # Change ownership of the application files
@@ -46,11 +47,11 @@ RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
-# Expose port 80
+# Copy Nginx configuration
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80 for Nginx
 EXPOSE 80
 
-# Start the service
-CMD ["php-fpm"]
-
-# Optional: Add a health check
-HEALTHCHECK CMD curl --fail http://localhost || exit 1
+# Start PHP-FPM and Nginx
+CMD service nginx start && php-fpm
