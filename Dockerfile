@@ -52,4 +52,5 @@ RUN php artisan view:cache
 EXPOSE 80
 
 # Start the service
-CMD ["php-fpm"]
+# CMD ["php-fpm"]
+CMD ["/start.sh"]
