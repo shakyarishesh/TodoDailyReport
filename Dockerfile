@@ -1,8 +1,9 @@
-# Use the Nginx + PHP-FPM image with PHP 7.3 or 7.4 (as required)
-FROM richarvey/nginx-php-fpm:1.7.2
+# Base image for PHP 8.2 with FPM
+FROM php:8.2-fpm
 
-# Install necessary packages
+# Install necessary packages and PHP extensions
 RUN apt-get update && apt-get install -y \
+    nginx \
     curl \
     libzip-dev \
     unzip \
@@ -10,13 +11,12 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     zlib1g-dev \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install gd
+    && docker-php-ext-install zip gd pdo pdo_mysql mbstring
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Check Composer version
+# Check Composer version (optional, for debugging)
 RUN composer --version
 
 # Set working directory
@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 # Copy application files to the container
 COPY . .
 
-# Change ownership of the application files
+# Change ownership of the application files to www-data
 RUN chown -R www-data:www-data /var/www/html
 
 # Set environment variables
@@ -49,5 +49,8 @@ RUN php artisan view:cache
 # Expose port 80 for Nginx
 EXPOSE 80
 
-# Start the Nginx + PHP-FPM service
-CMD ["/start.sh"]
+# Copy Nginx configuration file to the container
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+# Command to start both Nginx and PHP-FPM
+CMD service nginx start && php-fpm
