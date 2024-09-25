@@ -1,4 +1,4 @@
-# Use the Nginx and PHP-FPM image
+# Use the richarvey/nginx-php-fpm image
 FROM richarvey/nginx-php-fpm:1.7.2
 
 # Set the working directory
@@ -13,9 +13,8 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     zlib1g-dev \
-    && docker-php-ext-install zip \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql mbstring
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install zip gd pdo pdo_mysql mbstring
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
