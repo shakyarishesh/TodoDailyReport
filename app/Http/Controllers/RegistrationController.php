@@ -5,61 +5,141 @@ namespace App\Http\Controllers;
 use App\Models\Register;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegistrationController extends Controller
 {
+    // public function register(Request $request)
+    // {
+    //     try {
+    //         $validate_data = $request->validate([
+    //             'first_name' => 'required|string',
+    //             'last_name' => 'required|string',
+    //             'email' => 'required|email|unique:registers',
+    //             'password' => 'required|min:8',
+    //             'password_confirmation' => 'required|same:password'
+    //         ]);
+            
+    //         $validate_data['password'] = Hash::make($request->password);
+    //         $reg = Register::create($validate_data);
+
+    //         if ($request->expectsJson()) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'User created successfully',
+    //                 'data' => $reg,
+    //             ]);
+    //         } else {
+    //             return redirect('/list')->with('success', 'User created successfully');
+    //         }
+    //     } catch (\Exception $e) {
+    //         if ($request->expectsJson()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'error' => 'Registration failed. Please try again.',
+    //                 'details' => $e->getMessage(),
+    //             ], 500);
+    //         } else {
+    //             return redirect('/')->with('error', 'Registration failed. Please try again.');
+    //         }
+    //     }
+    // }
+
+
     public function register(Request $request)
     {
-        $reg = Register::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        if ($reg) {
+        try {
+            $validate_data = $request->validate([
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'email' => 'required|email|unique:registers',
+                'password' => 'required|min:8',
+                'password_confirmation' => 'required|same:password'
+            ]);
+            
+            $validate_data['password'] = Hash::make($request->password);
+            $validate_data['name'] = $validate_data['first_name'] . " " . $validate_data['last_name'];
+            $user = User::create($validate_data);
 
-            return redirect('/');
-        } else {
-
-            return view('register', ['message' => 'Registration Failed']);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User created successfully',
+                    'data' => $user,
+                ]);
+            } else {
+                return redirect('/list')->with('success', 'User created successfully');
+            }
+        } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Registration failed. Please try again.',
+                    'details' => $e->getMessage(),
+                ], 500);
+            } else {
+                return redirect('/')->with('error', 'Registration failed. Please try again.');
+            }
         }
     }
 
     public function login(Request $request)
     {
-        $request->validate([
+        $validate_data = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
         // Check if the email exists in the Register table
-        $email = Register::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        if (!$email) {
-            return view('login', ['message' => 'Email does not exist.']);
+        if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Email does not exist']);
+            } else {
+                return view('login', ['message' => 'Email does not exist.']);
+            }
         }
 
+        if (!Auth::attempt($validate_data)) {
+            if ($request->expectsJson()) {
+
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Incorrect Credentials'
+                ]);
+            } else {
+                return view('login', ['message' => 'Incorrect password.']);
+            }
+        }
+
+        $token = $user->createToken('access_token')->plainTextToken;
         // Verify the password
-        if (!password_verify($request->password, $email->password)) {
-            return view('login', ['message' => 'Incorrect password.']);
-        }
+        // if (!password_verify($request->password, $email->password)) {
+        //     return view('login', ['message' => 'Incorrect password.']);
+        // }
 
         // Successful login
         session()->put('login', $request->email);
 
-        // Check if user exists in the User table
-        $user = User::where('email', $request->email)->first();
+       
 
-        if ($user === null) {
-            // Create a new user in the User table
-            User::create([
-                'name' => $email->first_name . " " . $email->last_name,
-                'email' => $request->email,
-                'password' => $email->password,  // Make sure this is hashed before saving!
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'access_token' => $token,
+                'token_type' => 'bearer'
             ]);
+        } else {
+            return redirect('/list');
         }
+    }
 
-        return redirect('/list');
+    public function logout()
+    {
+        // Auth::logout();
+        session()->invalidate();
+        return redirect('/');
     }
 }

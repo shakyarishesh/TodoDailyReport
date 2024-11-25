@@ -19,6 +19,7 @@ Route::post('/registerPost',[RegistrationController::class,'register']);
 // Route::view('/login','login');
 //login post
 Route::post('/loginPost',[RegistrationController::class,'login']);
+Route::post('/logout', [RegistrationController::class, 'logout']);
 
 //for lists
 Route::view('/list','lists');

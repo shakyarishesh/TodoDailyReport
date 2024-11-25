@@ -9,29 +9,51 @@ class ReportController extends Controller
 {
     public function reportPost(Request $request)
     {
-
-        $reports = Report::create([
-            'title' => $request->title,
-            'date' => $request->date,
-            'time_from' => $request->timeFrom,
-            'time_to' => $request->timeTo,
-            'description' => $request->description,
-            'challenges' => $request->challenges,
-            'todo' => $request->todo,
+        $validate_date = $request->validate([
+            'title' => 'required',
+            'date' => 'required|date',
+            'time_from' => 'required',
+            'time_to' => 'required',
+            'description' => 'required',
+            'challenges' => 'required',
+            'todo' => 'required',
         ]);
 
-        if(!$reports)
-        {
-            return view('dailyreport',['message'=>"Data not submitted"]);
+        $reports = Report::create($validate_date);
+
+        if (!$reports) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Data not submitted'
+                ]);
+            } else {
+                return view('dailyreport', ['message' => "Data not submitted"]);
+            }
         }
 
-        return redirect('/list');
-
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data submitted',
+                'report' => $reports
+            ]);
+        } else {
+            return redirect('/list');
+        }
     }
 
-    public function reportGet()
+    public function reportGet(Request $request)
     {
         $reports = Report::get();
-        return view('profile',['reports'=>$reports]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'reports' => $reports
+            ]);
+        } else {
+            return view('profile', ['reports' => $reports]);
+        }
     }
 }

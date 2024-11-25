@@ -81,6 +81,7 @@
             <a href="/report">Report</a>
             <a href="#">To Do</a>
             <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
             @endif
         </div>
     </header>
