@@ -16,7 +16,7 @@
     <div class="container">
         <div class="form-section">
             <h2>Sign up</h2>
-            <form action="/registerPost" method="POST" id="signupForm" onsubmit="handleSignupSubmit(event)">
+            <form action="{{route('registerPost')}}" method="POST" id="signupForm" onsubmit="handleSignupSubmit(event)">
                 @csrf
                 <div class="input-group">
                     <input type="text" id="firstName" name="first_name" placeholder="First name" required>
@@ -27,7 +27,11 @@
                     <input type="email" id="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="password-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Password Enter at 8+ characters" required>
+                    <input type="password" id="password" name="password" placeholder="Password Enter at 4+ characters" required>
+                   
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password_confirmation" placeholder="Confirm Password" required>
                    
                 </div>
                 

@@ -13,7 +13,7 @@ Route::get('/', function () {
 //register
 Route::view('/register','register')->name('register');
 //register post
-Route::post('/registerPost',[RegistrationController::class,'register']);
+Route::post('/registerPost',[RegistrationController::class,'register'])->name('registerPost');
 
 
 //login

@@ -54,12 +54,13 @@ class RegistrationController extends Controller
                 'first_name' => 'required|string',
                 'last_name' => 'required|string',
                 'email' => 'required|email|unique:registers',
-                'password' => 'required|min:8',
+                'password' => 'required|min:4',
                 'password_confirmation' => 'required|same:password'
             ]);
             
             $validate_data['password'] = Hash::make($request->password);
             $validate_data['name'] = $validate_data['first_name'] . " " . $validate_data['last_name'];
+            dd($validate_data);
             $user = User::create($validate_data);
 
             if ($request->expectsJson()) {
