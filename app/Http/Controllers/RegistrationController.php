@@ -138,8 +138,8 @@ class RegistrationController extends Controller
 
     public function logout()
     {
-        // Auth::logout();
+        Auth::logout();
         session()->invalidate();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

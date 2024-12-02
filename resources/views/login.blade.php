@@ -22,7 +22,7 @@
         <!-- Login Form -->
         <div id="login" class="form-container">
             <div class="form-left">
-                <img src="images/cat1.jpg" alt="Login Image">
+                {{-- <img src="images/cat1.jpg" alt="Login Image"> --}}
             </div>
             <div class="form-right">
                 <h2>Log in</h2>
@@ -36,6 +36,7 @@
                     </div>
                     <input type="submit" value="Login" class="sb-btn">
                 </form>
+                <p><a href="{{route('google')}}">Login with Google</a></p>
                 <p>Don’t Have an Account? <a href="/register">Create Account</a></p>
             </div>
         </div>

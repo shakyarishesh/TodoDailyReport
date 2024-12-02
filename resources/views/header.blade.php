@@ -71,8 +71,8 @@
         </div>
         <div class="nav-links">
             @if (!session()->has('login'))
-            <a href="#login">Login</a>
-            <a href="#signup">Signup</a>
+            <a href="{{route('login')}}">Login</a>
+            <a href="{{route('register')}}">Signup</a>
             
             @endif
             
@@ -81,7 +81,13 @@
             <a href="/report">Report</a>
             <a href="#">To Do</a>
             <a href="/profile">Profile</a>
-            <a href="/logout">Logout</a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+            
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
             @endif
         </div>
     </header>
